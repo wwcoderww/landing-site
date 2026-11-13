@@ -5,7 +5,7 @@ import Skills from "./_components/skills";
 
 export default function page() {
   return (
-    <div className="pb-40">
+    <div className="">
       <ScrollReset />
       <Introduction />
       <Projects />

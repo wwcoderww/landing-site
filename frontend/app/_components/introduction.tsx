@@ -2,18 +2,18 @@ import Image from "next/image";
 
 export default function Introduction() {
   return (
-    <div className="">
-      <div className="grid grid-cols-[4fr_2fr]">
+    <div className="bg-linear-to-bl from-zinc-900 to-zinc-700">
+      <div className="grid lg:grid-cols-[4fr_2fr]">
         <div className="flex flex-col gap-12 py-20">
-          <p className="mx-40 text-9xl font-bold text-amber-400">
+          <p className="md:mx-40 md:text-9xl text-7xl font-bold text-amber-400 text-center md:text-start">
             Hello, I'm <br /> Kevin Sadler
           </p>
-          <div className="text-3xl px-10 pt-6 pb-10 ">
+          <div className="text-3xl px-10 pt-6 pb-10">
             <p className=" text-normal text-zinc-200">
               NextJs, ExpressJS, Docker, and Postgres developer with a passion
               for coding. Over the past 3 years, I have built a strong
               foundation in full-stack development and am eager to continue
-              scaling my technical skills. Driven by continuous learning, I am
+              scaling my developer skills. Driven by continuous learning, I am
               actively seeking a collaborative position where I can work
               alongside, learn from, and meaningfully contribute with a team of
               developers!
@@ -23,7 +23,7 @@ export default function Introduction() {
             Contact Me!
           </button>
         </div>
-        <div className="w-full h-full relative">
+        <div className="w-full h-1/2 xl:h-full my-auto relative hidden lg:inline-block">
           <Image src="/bezos.png" alt="mainPic" fill className="" />
         </div>
       </div>

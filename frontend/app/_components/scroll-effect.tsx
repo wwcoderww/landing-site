@@ -28,10 +28,10 @@ export default function ScrollEffect({
   }, []);
 
   const directions = {
-    left: "-translate-x-100",
-    right: "translate-x-100",
-    top: "-translate-y-24",
-    bottom: "translate-y-24",
+    left: "-translate-x-40 md:-translate-x-100",
+    right: "translate-x-40 md:translate-x-100",
+    top: "md:-translate-y-24",
+    bottom: "md:translate-y-24",
   };
 
   return (
