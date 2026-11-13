@@ -1,0 +1,84 @@
+name: Production Continuous Deployment
+
+on:
+  push:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  FRONTEND_IMAGE_NAME: ${{ github.repository }}-frontend
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Authenticate to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Downcase Repository Name for Registry Mapping
+        run: |
+          echo "FRONTEND_REF=$(echo "${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Compile & Push Frontend Image Linode (GHCR)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./frontend/Dockerfile
+          target: runner
+          push: true
+          tags: ${{ env.FRONTEND_REF }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-to-linode:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Codebase for Configuration Migration
+        uses: actions/checkout@v4
+
+      - name: Transfer Docker Compose Configuration to Linode
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 8443
+          source: "docker-compose.yml"
+          target: "/root/home/"
+
+      - name: Execute Remote SSH Container Updating Routines
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 8443
+          script: |
+            cd /root/home/
+
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            export FRONTEND_IMAGE="ghcr.io/${{ github.repository }}-frontend:latest"
+            export NODE_ENV="production"
+
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
