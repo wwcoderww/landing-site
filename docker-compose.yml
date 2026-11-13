@@ -1,0 +1,11 @@
+services:
+  frontend:
+    image: ${FRONTEND_IMAGE:-ghcr.io/wwcoderww/landing-site:latest}
+    container_name: FEhome
+    restart: always
+    networks:
+      - shared_postgres_network
+
+networks:
+  shared_postgres_network:
+    external: true
