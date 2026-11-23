@@ -18,7 +18,7 @@ const projects = [
 
 export default function Projects() {
   return (
-    <div className="bg-linear-to-br from-zinc-700 to-zinc-900 grid lg:grid-cols-2 text-zinc-900 ">
+    <div className="bg-linear-to-br from-zinc-700 to-zinc-900 grid lg:grid-cols-2 text-zinc-900 overflow-x-clip">
       {projects.map((project, i) => (
         <div key={i} className="flex flex-col">
           <div className=" py-12 text-center ">
